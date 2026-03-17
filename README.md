@@ -18,8 +18,7 @@ A real-time notification system built with Encore.ts and Bun. Two microservices 
 ### Prerequisites
 
 - [Encore](https://encore.dev/docs/install)
-- [Yarn](https://yarnpkg.com) or npm
-- [Bun](https://bun.sh) (for the CLI)
+- [Bun](https://bun.sh)
 
 ### Run locally
 
@@ -41,8 +40,7 @@ curl -fsSL https://bun.sh/install | bash
 
 ```sh
 cd backend
-yarn install
-# or: npm install
+bun install
 ```
 
 **4. Start the backend**
@@ -86,7 +84,7 @@ make build
 ```
 
 This will:
-1. Install backend dependencies (auto-detects yarn or npm)
+1. Install backend dependencies (auto-detects bun or yarn or npm)
 2. Install CLI dependencies via Bun
 3. Regenerate the typed Encore client from the running backend
 4. Compile the CLI into a single binary at `cli/notify`

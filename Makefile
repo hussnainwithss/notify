@@ -1,11 +1,8 @@
 .PHONY: build dev gen clean install
 
-# Auto-detect package manager for backend (yarn > npm)
-PKG_MANAGER := $(shell if yarn --version > /dev/null 2>&1; then echo yarn; else echo npm; fi)
-
 # Install all dependencies
 install:
-	cd backend && $(PKG_MANAGER) install
+	cd backend && bun install
 	cd cli && bun install
 
 # Generate Encore client and compile CLI binary
