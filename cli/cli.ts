@@ -4,6 +4,11 @@ import Client from "./clients/notify-client";
 import { registerUserCommands } from "./commands/users";
 import { registerNotificationCommands } from "./commands/notifications";
 
+const apiUrlFlag = process.argv.indexOf("--api-url");
+const apiUrl =
+  (apiUrlFlag !== -1 ? process.argv[apiUrlFlag + 1] : undefined) ??
+  process.env.NOTIFY_API_URL ??
+  "http://localhost:4000";
 const program = new Command();
 
 program
@@ -12,7 +17,6 @@ program
   .description("Notify CLI for users & notifications")
   .option("--api-url <url>", "Backend API URL");
 
-const apiUrl = process.env.NOTIFY_API_URL ?? "http://localhost:4000";
 const apiClient = new Client(apiUrl);
 
 registerUserCommands(program, apiClient);

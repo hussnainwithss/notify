@@ -7,7 +7,7 @@ export function registerNotificationCommands(
   apiClient: Client,
 ) {
   const notification = program
-    .command("notification")
+    .command("notifications")
     .description("Manage notifications");
 
   notification
