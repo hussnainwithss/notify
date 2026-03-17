@@ -7,7 +7,7 @@ CREATE TABLE notifications (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
-    delivery_status TEXT NOT NULL DEFAULT 'pending' CHECK (delivery_status IN ('pending', 'sent', 'skipped', 'failed')),
+    delivery_status TEXT NOT NULL DEFAULT 'pending' CHECK (delivery_status IN ('pending', 'sent', 'failed')),
 
     CONSTRAINT fk_notifications_recipient FOREIGN KEY (recipient_id)
         REFERENCES notification_users(user_id)
