@@ -1,0 +1,14 @@
+**/encore.gen.go
+**/encore.gen.cue
+**/.encore
+**/encore.gen
+**/encore
+**/dist
+**/__debug_*
+
+**/node_modules
+
+
+# Environment variables
+**/.env
+**/.env.*
