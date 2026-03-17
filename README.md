@@ -1,6 +1,6 @@
 # notify
 
-A real-time notification system built with Encore.ts and Bun. Two microservices — `users` and `notifications` — communicate via PostgreSQL-backed APIs and an event-driven PubSub layer. A compiled CLI binary wraps the HTTP API for local interaction.
+A notification system built with Encore.ts and Bun. Two microservices — `users` and `notifications` — communicate via PostgreSQL-backed APIs and an event-driven PubSub layer. A compiled CLI binary wraps the HTTP API for local interaction.
 
 ---
 
