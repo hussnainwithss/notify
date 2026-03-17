@@ -9,6 +9,10 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "encore.dev": "^1.56.0"
+    "encore.dev": "^1.56.0",
+    "zod": "^4.3.6"
+  },
+  "scripts": {
+    "gen:client": "encore gen client --lang typescript > ../cli/clients/notify-client.ts"
   }
 }

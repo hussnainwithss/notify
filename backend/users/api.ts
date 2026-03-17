@@ -1,9 +1,10 @@
-import { api } from "encore.dev/api";
-import { APIError, ErrCode } from "encore.dev/api";
+import { api, APIError, ErrCode } from "encore.dev/api";
 import { db } from "./db";
 import { UserModel } from "./types";
 import { UserStatus } from "./enums";
 import { userCreatedTopic } from "./events";
+import { validateCreateUserOrThrow } from "./validators";
+import { validateUUIDOrThrow } from "../utils";
 
 interface CreateUserReq {
   name: string;
@@ -13,10 +14,12 @@ interface CreateUserReq {
 
 export const createUser = api(
   { method: "POST", path: "/users", expose: true },
-  async (p: CreateUserReq): Promise<UserModel> => {
+  async (req: CreateUserReq): Promise<UserModel> => {
+    validateCreateUserOrThrow(req);
+
     const user: UserModel | null = await db.queryRow<UserModel>`
       INSERT INTO users (name, email, date_of_birth)
-        VALUES (${p.name}, ${p.email}, ${p.dateOfBirth})
+        VALUES (${req.name}, ${req.email}, ${req.dateOfBirth})
       ON CONFLICT (email) DO NOTHING
       RETURNING
         id,
@@ -67,6 +70,7 @@ export const getUsers = api(
 export const getUser = api(
   { method: "GET", path: "/users/:id", expose: true },
   async ({ id }: { id: string }): Promise<UserModel> => {
+    validateUUIDOrThrow(id);
     const user: UserModel | null = await db.queryRow<UserModel>`
        SELECT id,
         name,
@@ -79,9 +83,6 @@ export const getUser = api(
         where id = ${id};`;
     if (!user) {
       throw new APIError(ErrCode.NotFound, "user not found");
-    }
-    if (user.status !== UserStatus.ACTIVE) {
-      throw new APIError(ErrCode.NotFound, "inactive user");
     }
 
     return user;

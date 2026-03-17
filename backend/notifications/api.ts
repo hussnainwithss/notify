@@ -1,11 +1,11 @@
-import { api } from "encore.dev/api";
-import { APIError, ErrCode } from "encore.dev/api";
-import log from "encore.dev/log";
+import { api, APIError, ErrCode } from "encore.dev/api";
 import { db } from "./db";
 import { DeliveryStatusEnum, NotificationChannelEnum } from "./enums";
 import { NotificationModel, NotificationUserModel } from "./types";
 import { SendEmailNotification, SendInAppNotification } from "./providers";
 import { fetchUser } from "./clients";
+import { validateSendNotificationOrThrow } from "./validators";
+import { validateUUIDOrThrow } from "../utils";
 
 interface SendNotificationReq {
   userId: string;
@@ -17,16 +17,16 @@ interface SendNotificationReq {
 export const sendNotification = api<SendNotificationReq, NotificationModel>(
   { method: "POST", path: "/notifications", expose: true },
   async (req: SendNotificationReq): Promise<NotificationModel> => {
+    validateSendNotificationOrThrow(req);
     let user: NotificationUserModel | null =
       await db.queryRow<NotificationUserModel>`
       SELECT user_id as "userId", email, name, is_active as "isActive" FROM notification_users WHERE user_id = ${req.userId}`;
 
-    log.info("user", { user });
     if (!user) {
       user = await fetchUser(req.userId);
       if (user == null) {
         throw new APIError(
-          ErrCode.FailedPrecondition,
+          ErrCode.NotFound,
           "user not found to send notification",
         );
       }
@@ -121,13 +121,17 @@ export const sendNotification = api<SendNotificationReq, NotificationModel>(
   },
 );
 
-export const getNotifications = api(
+export const getNotifications = api<
+  { userId: string },
+  { notifications: NotificationModel[] }
+>(
   { method: "GET", path: "/notifications", expose: true },
   async ({
     userId,
   }: {
     userId: string;
   }): Promise<{ notifications: NotificationModel[] }> => {
+    validateUUIDOrThrow(userId);
     const rows = db.query<NotificationModel>`
       SELECT
         id,
@@ -149,13 +153,17 @@ export const getNotifications = api(
   },
 );
 
-export const getUnReadNotifications = api(
+export const getUnReadNotifications = api<
+  { userId: string },
+  { notifications: NotificationModel[] }
+>(
   { method: "GET", path: "/notifications/unread", expose: true },
   async ({
     userId,
   }: {
     userId: string;
   }): Promise<{ notifications: NotificationModel[] }> => {
+    validateUUIDOrThrow(userId);
     const rows = db.query<NotificationModel>`
       SELECT
         id,
@@ -180,9 +188,10 @@ export const getUnReadNotifications = api(
   },
 );
 
-export const markNotificationRead = api(
+export const markNotificationRead = api<{ id: string }, NotificationModel>(
   { method: "PATCH", path: "/notifications/:id/read", expose: true },
   async ({ id }: { id: string }): Promise<NotificationModel> => {
+    validateUUIDOrThrow(id);
     let notification: NotificationModel | null =
       await db.queryRow<NotificationModel>`
       SELECT
@@ -198,6 +207,12 @@ export const markNotificationRead = api(
       FROM notifications where id = ${id};`;
     if (notification == null) {
       throw new APIError(ErrCode.NotFound, "notification not found");
+    }
+    if (notification.channel !== NotificationChannelEnum.IN_APP) {
+      throw new APIError(
+        ErrCode.FailedPrecondition,
+        "cannot mark notification as read",
+      );
     }
     if (notification.deliveryStatus !== DeliveryStatusEnum.SENT) {
       throw new APIError(
