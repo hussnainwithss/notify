@@ -6,6 +6,7 @@ import { SendEmailNotification, SendInAppNotification } from "./providers";
 import { fetchUser } from "./clients";
 import { validateSendNotificationOrThrow } from "./validators";
 import { validateUUIDOrThrow } from "../utils";
+import { getAuthData } from "~encore/auth";
 
 interface SendNotificationReq {
   userId: string;
@@ -15,8 +16,14 @@ interface SendNotificationReq {
 }
 
 export const sendNotification = api<SendNotificationReq, NotificationModel>(
-  { method: "POST", path: "/notifications", expose: true },
+  { method: "POST", path: "/notifications", expose: true, auth: true },
   async (req: SendNotificationReq): Promise<NotificationModel> => {
+    const auth = getAuthData();
+
+    if (!auth?.roles.includes("admin")) {
+      throw new APIError(ErrCode.PermissionDenied, "requires admin role");
+    }
+
     validateSendNotificationOrThrow(req);
     let user: NotificationUserModel | null =
       await db.queryRow<NotificationUserModel>`

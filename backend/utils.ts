@@ -15,3 +15,14 @@ const UUIDSchema = z.uuid("invalid id");
 export function validateUUIDOrThrow(input: unknown): string {
   return validateOrThrow(UUIDSchema, input);
 }
+
+export interface AuthData {
+  userID: string;
+  roles: string[];
+}
+
+export function requireRole(auth: AuthData | null, role: string): void {
+  if (!auth?.roles.includes(role)) {
+    throw new APIError(ErrCode.PermissionDenied, `requires ${role} role`);
+  }
+}

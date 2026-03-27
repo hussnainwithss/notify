@@ -26,6 +26,7 @@ export const createUser = api(
         name,
         email,
         status,
+        roles,
         date_of_birth as "dateOfBirth",
         created_at as "createdAt",
         updated_at as "updatedAt";`;
@@ -55,6 +56,7 @@ export const getUsers = api(
        name,
        email,
        status,
+       roles,
        date_of_birth as "dateOfBirth",
        created_at as "createdAt",
        updated_at as "updatedAt"
@@ -76,6 +78,7 @@ export const getUser = api(
         name,
         email,
         status,
+        roles,
         date_of_birth as "dateOfBirth",
         created_at as "createdAt",
         updated_at as "updatedAt"

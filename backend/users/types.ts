@@ -1,4 +1,4 @@
-import { UserStatus } from "./enums";
+import { UserRole, UserStatus } from "./enums";
 
 export interface UserModel {
   id: string;
@@ -6,6 +6,7 @@ export interface UserModel {
   email: string;
   dateOfBirth: Date;
   status: UserStatus;
+  roles: UserRole[];
   createdAt: Date;
   updatedAt: Date;
 }

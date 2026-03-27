@@ -3,3 +3,8 @@ export enum UserStatus {
   DEACTIVATED = "deactivated",
   DELETED = "deleted",
 }
+
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
